@@ -1,24 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./index.css"; // Make sure this import is at the top
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Routes,
+} from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import Homepage from "./Components/Homepage";
+import Cart from "./Components/Cart";
+import Checkout from "./Components/Checkout";
+import Productdetail from "./Components/Productdetail";
+import { useState, useEffect } from "react";
+import Thankyou from "./Components/Thankyou";
 
 function App() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`https://fakestoreapi.com/products`);
+        const data = await response.json();
+        setProducts(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <div className="container mx-auto mt-4">
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route
+            path="/product/:id"
+            element={<Productdetail products={products} />}
+          />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/thankyou" element={<Thankyou />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
